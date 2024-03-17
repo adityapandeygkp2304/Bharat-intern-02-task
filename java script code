@@ -1,0 +1,34 @@
+window.addEventListener('load', () => {
+    let long;
+    let lat;
+    let temperatureDescription = document.getElementById('description');
+    let temperatureDegree = document.getElementById('temperature');
+    let locationTimeZone = document.getElementById('location');
+    let weatherIcon = document.getElementById('weather-icon');
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+            long = position.coords.longitude;
+            lat = position.coords.latitude;
+
+            const proxy = 'https://cors-anywhere.herokuapp.com/';
+            const api = `${proxy}https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&appid=YOUR_API_KEY&units=metric`;
+
+            fetch(api)
+                .then(response => {
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+                    const { temp } = data.main;
+                    const { description, icon } = data.weather[0];
+                    const location = data.name;
+                    temperatureDegree.textContent = `${temp}°C`;
+                    temperatureDescription.textContent = description;
+                    locationTimeZone.textContent = location;
+                    const iconUrl = `http://openweathermap.org/img/wn/${icon}.png`;
+                    weatherIcon.innerHTML = `<img src="${iconUrl}" alt="${description}">`;
+                });
+        });
+    }
+});
